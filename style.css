@@ -1,0 +1,94 @@
+@import url("https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100..900;1,100..900&display=swap");
+
+* {
+  font-family: "Overpass";
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: #020617;
+  color: white;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+  padding: 1rem;
+}
+.container h2 {
+  font-size: 2rem;
+  background: linear-gradient(to bottom, rgb(100, 58, 251), rgb(244, 33, 86));
+  color: transparent;
+  background-clip: text;
+}
+.typing_wrapper {
+  max-width: 800px;
+  width: 100%;
+  margin: auto;
+  height: calc(100svh - 400px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+.button_wrapper button {
+  font-size: 1rem;
+  background: rgb(36, 68, 36);
+  color: white;
+  border: 1px solid #ffffff30;
+  border-radius: 7px;
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: all 0.2s ease-in;
+}
+.button_wrapper button:hover {
+  background: rgb(54, 106, 54);
+}
+.typing_text {
+  font-size: 2rem;
+  line-height: 3rem;
+  letter-spacing: 2px;
+  word-spacing: 3.5px;
+  color: #ffffff60;
+}
+
+.wrong {
+  /* color: #05f505; */
+  color: #fa3333fd;
+  padding: 0;
+  margin: 0;
+  display: inline;
+  height: fit-content;
+}
+.right {
+  color: #05f50560;
+  padding: 0;
+  margin: 0;
+  display: inline;
+  height: fit-content;
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+span.cursor {
+  background: #ffff00;
+  max-height: 27px;
+  min-width: 3px;
+  border-radius: 1px;
+  position: relative;
+  top: 6px;
+  animation: blink 1.5s infinite;
+}
