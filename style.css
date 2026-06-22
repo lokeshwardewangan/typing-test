@@ -83,12 +83,17 @@ body {
     opacity: 0;
   }
 }
-span.cursor {
+.cursor {
   background: #ffff00;
-  max-height: 27px;
-  min-width: 3px;
+  height: 30px;
+  width: 3px;
   border-radius: 1px;
-  position: relative;
-  top: 6px;
   animation: blink 1.5s infinite;
+
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+
+  position: relative;
+  top: 5px;
 }
