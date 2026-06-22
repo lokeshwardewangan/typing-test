@@ -1,43 +1,40 @@
 const typingTextElement = document.getElementById("typing_text");
 const typingWrapperElement = document.querySelector(".typing_wrapper");
 const resultWrapperElement = document.querySelector(".result_wrapper");
-const againTestStartButtonElement =
-  document.querySelector("#again_test_button");
-const timerWrapperSecondElement = document.querySelector(
-  "#timer_wrapper .second",
-);
+const retryButtonElement = document.querySelector("#again_test_button");
+const timerSecondsElement = document.querySelector("#timer_wrapper .second");
+
 const typingTextContent = typingTextElement.innerText;
-console.log(typingTextContent);
+
+const TEST_DURATION = 30; // seconds
+const LETTERS_PER_WORD = 5;
 
 let typedContent = "";
-let typedContentElements = document.createElement("p");
+let typedLettersHtml = document.createElement("p");
 
 const typingCursorElement = document.createElement("p");
 typingCursorElement.className = "cursor";
-// typingCursorElement.textContent = "a"
 
-typingTextElement.insertBefore(
-  typingCursorElement,
-  typingTextElement.firstChild,
-);
+typingTextElement.insertBefore(typingCursorElement, typingTextElement.firstChild);
 
-let originalTimer = 30;
-let timer = originalTimer;
+let secondsLeft = TEST_DURATION;
+timerSecondsElement.innerHTML = `${secondsLeft}s`;
 
-let wpm = 60;
-timerWrapperSecondElement.innerHTML = `${timer}s`;
+let correctLetters = 0;
+let wrongLetters = 0;
 
-let totalLettersInTypingText = typingTextContent.length;
-let noOfWrongLettersTyped = 0;
-let noOfRightLettersTyped = 0;
-
-let isDisableUserType = false;
+let isTypingDisabled = false;
 let isTestStart = false;
 let timerInterval = null;
 
+// runs everytime u press a key
+// figures out right or wrong and redraws the text
 function handleUserType(e) {
-  // if valid keys then only execute
   const key = e.key;
+  // only want normal chars here letters space and dot
+  // weird thing -> e.key for backspace shift etc is the full word like "Backspace"
+  // and it still passes the a-z check coz it only looks at first letter and B is in A-Z
+  // so just check length is 1 first to skip all that junk
   if (
     key.length === 1 &&
     ((key >= "a" && key <= "z") ||
@@ -45,147 +42,127 @@ function handleUserType(e) {
       key == " " ||
       key == ".")
   ) {
-    // the whole text is already typed — ignore any extra keys
+    // already typed the full text so dont add more
     if (typedContent.length >= typingTextContent.length) return;
 
-    // create one variable which store howmuch we typed typedContent
-    typedContent += e.key;
-    console.log(typedContent);
-    let isLetterTrue = typingTextContent.includes(typedContent);
+    typedContent += key;
+    const typedLength = typedContent.length;
 
-    let lengthTypedContent = typedContent.length;
-    if (lengthTypedContent == 1) {
+    // first key -> start the timer
+    if (!isTestStart) {
       isTestStart = true;
-      handleTimer(isTestStart);
+      startTimer();
     }
-    // one more variable which store with elements typedContentElements
 
-    // take that letter and with its right or wrong // typedLetter , isTypedLetterTrue
-    let typedLetter = e.key;
-    let originalLetter = typingTextContent[lengthTypedContent - 1];
-    let isTypedLetterTrue = typedLetter === originalLetter;
-    if (isTypedLetterTrue) {
-      noOfRightLettersTyped++;
-      console.log("true");
+    const expectedLetter = typingTextContent[typedLength - 1];
+    const isTypedLetterCorrect = key === expectedLetter;
+    if (isTypedLetterCorrect) {
+      correctLetters++;
     } else {
-      noOfWrongLettersTyped++;
-      console.log("false");
+      wrongLetters++;
     }
-    // create one elementt and insert content that letter and
-    let typedElement = document.createElement("p");
-    typedElement.className = isTypedLetterTrue ? "right" : "wrong";
-    typedElement.textContent = originalLetter;
-    // push element in typedContentElements
-    typedContentElements.innerHTML += typedElement.outerHTML;
-    console.log(typedContentElements.innerHTML);
 
-    // add cursor in last once
+    // keep adding each letter to one html string
+    // every letter is a <p> with right or wrong class so css can color it
+    const letterElement = document.createElement("p");
+    letterElement.className = isTypedLetterCorrect ? "right" : "wrong";
+    letterElement.textContent = expectedLetter;
+    typedLettersHtml.innerHTML += letterElement.outerHTML;
 
-    // calculate remaining texts which is not typed
-    let remainingText = typingTextContent.slice(
-      lengthTypedContent,
-      typingTextContent.length,
-    );
-    // append that typedContentElement in that mainelement as first child and then main content remaining
+    const remainingText = typingTextContent.slice(typedLength);
 
-    // update actual dom
+    // im just redrawing the whole thing every key instead of touching single letters
+    // typed letters + cursor + the text thats left. easier for me to handle
     typingTextElement.innerHTML =
-      typedContentElements.innerHTML +
+      typedLettersHtml.innerHTML +
       typingCursorElement.outerHTML +
       remainingText;
 
-    // finished the whole text before time ran out — end the test now
+    // done typing before time is over so just end it
     if (typedContent.length === typingTextContent.length) {
       clearInterval(timerInterval);
-      calculateResult();
+      endTest();
     }
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (e) => {
-    if (!isDisableUserType) {
+    if (!isTypingDisabled) {
       handleUserType(e);
     }
   });
 
-  againTestStartButtonElement.addEventListener("click", () => {
-    updateUserTypeWrapperDisable(false);
+  retryButtonElement.addEventListener("click", () => {
+    setTypingDisabled(false);
     resetTest();
-    document.querySelector(".result_wrapper").classList.remove("show");
+    resultWrapperElement.classList.remove("show");
   });
 });
 
 function resetTest() {
-  // reset all the test state back to a fresh start
+  // put everything back to start
   clearInterval(timerInterval);
   typedContent = "";
-  typedContentElements = document.createElement("p");
-  noOfRightLettersTyped = 0;
-  noOfWrongLettersTyped = 0;
-  timer = originalTimer;
+  typedLettersHtml = document.createElement("p");
+  correctLetters = 0;
+  wrongLetters = 0;
+  secondsLeft = TEST_DURATION;
   isTestStart = false;
 
-  // restore the timer display and the original text with the cursor at the start
-  timerWrapperSecondElement.innerHTML = `${timer}s`;
+  // show the timer again and the full text with cursor at the start
+  timerSecondsElement.innerHTML = `${secondsLeft}s`;
   typingTextElement.innerHTML =
     typingCursorElement.outerHTML + typingTextContent;
 }
 
-function handleShowTypingCursor(isShow) {
-  const display = isShow ? "inline-block" : "none";
-  // keep the source element in sync (it gets re-serialized on the next render)
+function setCursorVisible(isVisible) {
+  const display = isVisible ? "inline-block" : "none";
+  // tricky one. the cursor on screen is not this element
+  // its a copy made from outerHTML when i redraw the text
+  // so changing this alone does nothing. i change both this one
+  // and the real one sitting in the dom right now
   typingCursorElement.style.display = display;
-  // but the cursor currently on screen is a serialized copy, so update it too
   const renderedCursor = typingTextElement.querySelector(".cursor");
   if (renderedCursor) {
     renderedCursor.style.display = display;
   }
 }
 
-function updateUserTypeWrapperDisable(isDisable) {
-  isDisableUserType = isDisable ? true : false;
-  handleShowTypingCursor(isDisable ? false : true);
-  typingWrapperElement.style.opacity = isDisable ? "0.5" : 1;
-  typingWrapperElement.style.pointerEvents = isDisable ? "none" : "auto";
-  typingWrapperElement.style.userSelect = isDisable ? "none" : "auto";
+function setTypingDisabled(isDisabled) {
+  isTypingDisabled = isDisabled;
+  setCursorVisible(!isDisabled);
+  typingWrapperElement.style.opacity = isDisabled ? "0.5" : 1;
+  typingWrapperElement.style.pointerEvents = isDisabled ? "none" : "auto";
+  typingWrapperElement.style.userSelect = isDisabled ? "none" : "auto";
 }
 
+function endTest() {
+  setTypingDisabled(true);
 
+  // wpm is words per min. 1 word = 5 chars
+  // we only type for 30s so multiply to make it a full minute
+  const typedWords = correctLetters / LETTERS_PER_WORD;
+  const wpm = Math.round(typedWords * (60 / TEST_DURATION));
 
+  document.querySelector(".total_time").innerHTML = `${TEST_DURATION}s`;
+  document.querySelector(".wpm").innerHTML = `${wpm}`;
+  document.querySelector(".noOfRightWord").innerHTML = `${correctLetters}`;
+  document.querySelector(".noOfWrongWord").innerHTML = `${wrongLetters}`;
 
-function calculateResult() {
-  updateUserTypeWrapperDisable(true);
-
-  // lets take word = 5 letter
-  let noOfWordsTyped = noOfRightLettersTyped / 5;
-
-  let oneMinuteTotalWordsTyped = noOfWordsTyped * 2;
-
-  document.querySelector(".total_time").innerHTML = `${originalTimer}s`;
-  document.querySelector(".wpm").innerHTML =
-    `${Math.round(oneMinuteTotalWordsTyped)}`;
-  document.querySelector(".noOfRightWord").innerHTML =
-    `${noOfRightLettersTyped}`;
-  document.querySelector(".noOfWrongWord").innerHTML =
-    `${noOfWrongLettersTyped}`;
-
-  // reveal the result panel only once we actually have a result
-  document.querySelector(".result_wrapper").classList.add("show");
+  // now show the result box
+  resultWrapperElement.classList.add("show");
 }
 
-function handleTimer(isTestStart) {
-  if (!isTestStart) return;
-  // clear any previous interval so we never run two timers at once
+function startTimer() {
+  // clear the old timer first so we dont end up with 2 running
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
-    timerWrapperSecondElement.innerHTML = `${timer}s`;
-    timer--;
-    if (timer < 0) {
-      calculateResult();
-
+    timerSecondsElement.innerHTML = `${secondsLeft}s`;
+    secondsLeft--;
+    if (secondsLeft < 0) {
       clearInterval(timerInterval);
-      console.log("time is up");
+      endTest();
     }
   }, 1000);
 }
