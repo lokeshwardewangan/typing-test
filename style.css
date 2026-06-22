@@ -357,3 +357,40 @@ body {
     flex: 1 0 28%;
   }
 }
+
+.button_wrapper_again {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+#again_test_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(120deg, var(--accent-1), var(--accent-2));
+  border: none;
+  border-radius: 10px;
+  padding: 11px 22px;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  box-shadow: 0 8px 24px rgba(100, 58, 251, 0.3);
+}
+
+#again_test_button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 12px 30px rgba(244, 33, 86, 0.35);
+}
+
+#again_test_button:active {
+  transform: translateY(0);
+}
+
+#again_test_button svg {
+  width: 17px;
+  height: 17px;
+}

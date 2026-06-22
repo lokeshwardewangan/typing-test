@@ -113,6 +113,7 @@ function updateUserTypeWrapperDisable(isDisable) {
   handleShowTypingCursor(isDisable ? false : true);
   typingWrapperElement.style.opacity = isDisable ? "0.5" : 1;
   typingWrapperElement.style.pointerEvents = isDisable ? "none" : "auto";
+  typingWrapperElement.style.userSelect = isDisable ? "none" : "auto";
 }
 
 
