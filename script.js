@@ -39,10 +39,11 @@ function handleUserType(e) {
   // if valid keys then only execute
   const key = e.key;
   if (
-    (key >= "a" && key <= "z") ||
-    (key >= "A" && key <= "Z") ||
-    key == " " ||
-    key == "."
+    key.length === 1 &&
+    ((key >= "a" && key <= "z") ||
+      (key >= "A" && key <= "Z") ||
+      key == " " ||
+      key == ".")
   ) {
     // the whole text is already typed — ignore any extra keys
     if (typedContent.length >= typingTextContent.length) return;
