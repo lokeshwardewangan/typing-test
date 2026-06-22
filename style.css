@@ -136,11 +136,11 @@ body {
 }
 
 .cursor {
-  background: linear-gradient(var(--accent-1), var(--accent-2));
+  background: #ffd60a;
   height: 32px;
   width: 3px;
   border-radius: 2px;
-  box-shadow: 0 0 10px rgba(100, 58, 251, 0.8);
+  box-shadow: 0 0 12px rgba(255, 214, 10, 0.9);
   animation: blink 1.1s infinite;
 
   display: inline-block;

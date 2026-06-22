@@ -32,6 +32,8 @@ let noOfWrongLettersTyped = 0;
 let noOfRightLettersTyped = 0;
 
 let isDisableUserType = false;
+let isTestStart = false;
+let timerInterval = null;
 
 function handleUserType(e) {
   // if valid keys then only execute
@@ -42,6 +44,9 @@ function handleUserType(e) {
     key == " " ||
     key == "."
   ) {
+    // the whole text is already typed — ignore any extra keys
+    if (typedContent.length >= typingTextContent.length) return;
+
     // create one variable which store howmuch we typed typedContent
     typedContent += e.key;
     console.log(typedContent);
@@ -87,11 +92,16 @@ function handleUserType(e) {
       typedContentElements.innerHTML +
       typingCursorElement.outerHTML +
       remainingText;
+
+    // finished the whole text before time ran out — end the test now
+    if (typedContent.length === typingTextContent.length) {
+      clearInterval(timerInterval);
+      calculateResult();
+    }
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  calculateResult();
   document.addEventListener("keydown", (e) => {
     if (!isDisableUserType) {
       handleUserType(e);
@@ -100,12 +110,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   againTestStartButtonElement.addEventListener("click", () => {
     updateUserTypeWrapperDisable(false);
+    resetTest();
     document.querySelector(".result_wrapper").classList.remove("show");
   });
 });
 
+function resetTest() {
+  // reset all the test state back to a fresh start
+  clearInterval(timerInterval);
+  typedContent = "";
+  typedContentElements = document.createElement("p");
+  noOfRightLettersTyped = 0;
+  noOfWrongLettersTyped = 0;
+  timer = originalTimer;
+  isTestStart = false;
+
+  // restore the timer display and the original text with the cursor at the start
+  timerWrapperSecondElement.innerHTML = `${timer}s`;
+  typingTextElement.innerHTML =
+    typingCursorElement.outerHTML + typingTextContent;
+}
+
 function handleShowTypingCursor(isShow) {
-  typingCursorElement.style.display = isShow ? "inline-block" : "none";
+  const display = isShow ? "inline-block" : "none";
+  // keep the source element in sync (it gets re-serialized on the next render)
+  typingCursorElement.style.display = display;
+  // but the cursor currently on screen is a serialized copy, so update it too
+  const renderedCursor = typingTextElement.querySelector(".cursor");
+  if (renderedCursor) {
+    renderedCursor.style.display = display;
+  }
 }
 
 function updateUserTypeWrapperDisable(isDisable) {
@@ -141,13 +175,15 @@ function calculateResult() {
 
 function handleTimer(isTestStart) {
   if (!isTestStart) return;
-  const intervalValid = setInterval(() => {
+  // clear any previous interval so we never run two timers at once
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
     timerWrapperSecondElement.innerHTML = `${timer}s`;
     timer--;
     if (timer < 0) {
       calculateResult();
 
-      clearInterval(intervalValid);
+      clearInterval(timerInterval);
       console.log("time is up");
     }
   }, 1000);
