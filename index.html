@@ -42,6 +42,16 @@
       </header>
       <main class="main">
         <div id="timer_wrapper">
+          <svg class="timer_ring" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <linearGradient id="timerGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#643afb" />
+                <stop offset="1" stop-color="#f42156" />
+              </linearGradient>
+            </defs>
+            <circle class="timer_ring_track" cx="50" cy="50" r="44"></circle>
+            <circle class="timer_ring_progress" cx="50" cy="50" r="44" stroke="url(#timerGrad)"></circle>
+          </svg>
           <div class="second"></div>
         </div>
         <div class="typing_wrapper">

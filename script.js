@@ -3,11 +3,15 @@ const typingWrapperElement = document.querySelector(".typing_wrapper");
 const resultWrapperElement = document.querySelector(".result_wrapper");
 const retryButtonElement = document.querySelector("#again_test_button");
 const timerSecondsElement = document.querySelector("#timer_wrapper .second");
+const timerWrapperElement = document.getElementById("timer_wrapper");
+const timerRingProgress = document.querySelector(".timer_ring_progress");
 
 const typingTextContent = typingTextElement.innerText;
 
 const TEST_DURATION = 30; // seconds
 const LETTERS_PER_WORD = 5;
+// circle radius in the svg is 44, so this is its full circumference
+const TIMER_RING_LENGTH = 2 * Math.PI * 44;
 
 let typedContent = "";
 let typedLettersHtml = document.createElement("p");
@@ -18,7 +22,9 @@ typingCursorElement.className = "cursor";
 typingTextElement.insertBefore(typingCursorElement, typingTextElement.firstChild);
 
 let secondsLeft = TEST_DURATION;
-timerSecondsElement.innerHTML = `${secondsLeft}s`;
+// set the dash length once, then draw the full ring at start
+timerRingProgress.style.strokeDasharray = TIMER_RING_LENGTH;
+updateTimer();
 
 let correctLetters = 0;
 let wrongLetters = 0;
@@ -110,10 +116,20 @@ function resetTest() {
   secondsLeft = TEST_DURATION;
   isTestStart = false;
 
-  // show the timer again and the full text with cursor at the start
-  timerSecondsElement.innerHTML = `${secondsLeft}s`;
+  // show the timer again (full ring) and the full text with cursor at the start
+  updateTimer();
   typingTextElement.innerHTML =
     typingCursorElement.outerHTML + typingTextContent;
+}
+
+// updates the number in the middle + how much of the ring is filled
+// also flips the "low" class so the ring/number go red near the end
+function updateTimer() {
+  const safeSeconds = Math.max(secondsLeft, 0);
+  timerSecondsElement.innerHTML = `${safeSeconds}`;
+  const fractionLeft = safeSeconds / TEST_DURATION;
+  timerRingProgress.style.strokeDashoffset = TIMER_RING_LENGTH * (1 - fractionLeft);
+  timerWrapperElement.classList.toggle("low", secondsLeft <= 5);
 }
 
 function setCursorVisible(isVisible) {
@@ -158,7 +174,7 @@ function startTimer() {
   // clear the old timer first so we dont end up with 2 running
   clearInterval(timerInterval);
   timerInterval = setInterval(() => {
-    timerSecondsElement.innerHTML = `${secondsLeft}s`;
+    updateTimer();
     secondsLeft--;
     if (secondsLeft < 0) {
       clearInterval(timerInterval);
