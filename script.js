@@ -5,6 +5,14 @@ const retryButtonElement = document.querySelector("#again_test_button");
 const timerSecondsElement = document.querySelector("#timer_wrapper .second");
 const timerWrapperElement = document.getElementById("timer_wrapper");
 const timerRingProgress = document.querySelector(".timer_ring_progress");
+const hiddenInputElement = document.querySelector(".hidden_input");
+
+// phones dont have a real keyboard, so we open a hidden input to type into
+const isTouchDevice =
+  window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
+if (isTouchDevice) {
+  document.body.classList.add("is-touch");
+}
 
 const typingTextContent = typingTextElement.innerText;
 
@@ -33,10 +41,10 @@ let isTypingDisabled = false;
 let isTestStart = false;
 let timerInterval = null;
 
-// runs everytime u press a key
-// figures out right or wrong and redraws the text
-function handleUserType(e) {
-  const key = e.key;
+// the actual typing logic. takes one character (from desktop keydown OR the
+// mobile hidden input) and figures out right/wrong + redraws the text
+function processKey(key) {
+  if (isTypingDisabled) return;
   // only want normal chars here letters space and dot
   // weird thing -> e.key for backspace shift etc is the full word like "Backspace"
   // and it still passes the a-z check coz it only looks at first letter and B is in A-Z
@@ -93,16 +101,44 @@ function handleUserType(e) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // desktop path: physical keyboard.
+  // if the hidden input is focused (mobile) we let the input handle it instead,
+  // otherwise we'd count the same key twice
   document.addEventListener("keydown", (e) => {
-    if (!isTypingDisabled) {
-      handleUserType(e);
+    if (document.activeElement === hiddenInputElement) return;
+    processKey(e.key);
+  });
+
+  // mobile path: tapping the typing area opens the keyboard
+  typingWrapperElement.addEventListener("click", () => {
+    if (!isTypingDisabled) hiddenInputElement.focus();
+  });
+
+  // each character typed into the hidden input comes through here
+  hiddenInputElement.addEventListener("beforeinput", (e) => {
+    if (e.data) {
+      for (const char of e.data) {
+        processKey(char);
+      }
     }
+    // keep the input empty, we track everything in typedContent ourselves
+    e.preventDefault();
+  });
+
+  // used to hide the "tap to type" hint while the keyboard is open
+  hiddenInputElement.addEventListener("focus", () => {
+    document.body.classList.add("input-focused");
+  });
+  hiddenInputElement.addEventListener("blur", () => {
+    document.body.classList.remove("input-focused");
   });
 
   retryButtonElement.addEventListener("click", () => {
     setTypingDisabled(false);
     resetTest();
     resultWrapperElement.classList.remove("show");
+    // keep the keyboard up on mobile so they can go again right away
+    if (isTouchDevice) hiddenInputElement.focus();
   });
 });
 

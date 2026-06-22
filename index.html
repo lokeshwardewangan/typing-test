@@ -55,12 +55,23 @@
           <div class="second"></div>
         </div>
         <div class="typing_wrapper">
+          <!-- invisible input, only used on mobile to open the keyboard -->
+          <input
+            class="hidden_input"
+            type="text"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+            tabindex="-1"
+          />
           <div class="typing_text_wrapper">
             <p id="typing_text" class="typing_text">this is a simple typing test with easy words. the sun is bright and
              he sky is blue. birds fly over the trees and people walk in the
               park. a small dog runs on the grass. everyone enjoys the fresh air
               and the pleasant weather during the day.</p>
           </div>
+          <p class="tap_hint">tap here to start typing</p>
         </div>
         <div class="result_wrapper">
           <span class="result_topline"></span>
