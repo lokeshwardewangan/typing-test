@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (e) => {
     // if valid keys then only execute
     const key = e.key;
-    if ((key >= "a" && key <= "z") || (key >= "A" && key <= "Z")) {
+    if ((key >= "a" && key <= "z") || (key >= "A" && key <= "Z") || (key == " ")) {
       // create one variable which store howmuch we typed typedContent
       typedContent += e.key;
       console.log(typedContent);
