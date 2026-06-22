@@ -73,7 +73,8 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.button_wrapper button {
+.button_wrapper button ,
+.button_wrapper_again button {
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -148,4 +149,211 @@ body {
 
   position: relative;
   top: 6px;
+}
+
+/* ---------- Timer ---------- */
+#timer_wrapper {
+  margin: 1.5rem auto 0;
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(100, 58, 251, 0.18), transparent 70%),
+    rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+/* glowing accent ring */
+#timer_wrapper::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.9;
+}
+
+.second {
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(120deg, var(--accent-1), var(--accent-2));
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.second::after {
+  content: "s";
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-left: 1px;
+  -webkit-text-fill-color: var(--text-dim);
+}
+
+/* ---------- Results ---------- */
+@keyframes resultReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* hidden until the test finishes — no empty/zeroed panel up front */
+.result_wrapper {
+  display: none;
+}
+
+.result_wrapper.show {
+  width: 100%;
+  max-width: 820px;
+  margin: 2.5rem auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+  animation: resultReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* gradient separator line on top of the result */
+.result_topline {
+  height: 3px;
+  width: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+}
+
+/* "Result" reads as a heading, with a gradient underline */
+.result_heading {
+  position: relative;
+  align-self: flex-start;
+  margin: 0.5rem 0 0.25rem;
+  padding-bottom: 0.5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: #ffffffee;
+}
+
+.result_heading::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+}
+.button_wrapper_again{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.result_cards {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+/* shared card: equal cells, centered content */
+.result_card {
+  flex: 1;
+  min-width: 0;
+  padding: 1.5rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* highlighted WPM card — slightly wider + accent fill */
+.card_wpm {
+  flex: 1.5;
+  background: linear-gradient(
+    135deg,
+    rgba(100, 58, 251, 0.22),
+    rgba(244, 33, 86, 0.14)
+  );
+  border-color: rgba(124, 92, 255, 0.4);
+}
+
+.card_value {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.card_label {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-dim);
+}
+
+.stat_value {
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1;
+  color: #ffffffdd;
+}
+
+/* semantic highlight per stat */
+.total_time.stat_value {
+  color: #4ca3ff;
+}
+.noOfRightWord.stat_value {
+  color: var(--right);
+}
+.noOfWrongWord.stat_value {
+  color: var(--wrong);
+}
+
+.stat_label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.card_label {
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+@media (max-width: 560px) {
+  .result_cards {
+    flex-wrap: wrap;
+  }
+  .card_wpm {
+    flex: 1 0 100%;
+  }
+  .stat_card {
+    flex: 1 0 28%;
+  }
 }

@@ -11,6 +11,9 @@
       <div class="heading">
         <h2>How Fast Can You Type?</h2>
       </div>
+      <div id="timer_wrapper">
+        <div class="second"></div>
+      </div>
       <div class="typing_wrapper">
         <!-- <div class="button_wrapper">
           <button>Start Test</button>
@@ -21,6 +24,31 @@
             park. a small dog runs on the grass. everyone enjoys the fresh air
             and the pleasant weather during the day.</p>
         </div>
+      </div>
+      <div class="result_wrapper">
+        <span class="result_topline"></span>
+        <h3 class="result_heading">Result</h3>
+        <div class="result_cards">
+          <div class="result_card card_wpm">
+            <div class="wpm card_value"></div>
+            <span class="card_label">wpm</span>
+          </div>
+          <div class="result_card stat_card">
+            <div class="total_time stat_value"></div>
+            <span class="stat_label">time</span>
+          </div>
+          <div class="result_card stat_card">
+            <div class="noOfRightWord stat_value"></div>
+            <span class="stat_label">correct</span>
+          </div>
+          <div class="result_card stat_card">
+            <div class="noOfWrongWord stat_value"></div>
+            <span class="stat_label">errors</span>
+          </div>
+        </div>
+        <div class="button_wrapper_again">
+            <button id="again_test_button" >Again Once ?</button>
+          </div>
       </div>
     </div>
     <script src="script.js"></script>
