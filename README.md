@@ -4,6 +4,9 @@ A small typing speed test i built with just plain html, css and js. No react, no
 
 These are basically my own rough notes on how i thought about it and built it.
 
+> [!IMPORTANT]
+> This is **not** vibe coded. I wrote every bit of the logic myself — the typing, the timer, the wpm math, the mobile keyboard handling, all of it — and worked it out before looking anything up. The notes below are literally how i reasoned through it.
+
 ---
 
 ## The Idea
@@ -54,6 +57,9 @@ I was setting display none on my cursor element but nothing happened. Took me a 
 
 **Try again button wasnt really restarting.**
 First time it didnt reset the typed text, counters, timer etc so the second test was broken. Made a reset function that clears everything back to start.
+
+**Phones had no keyboard so you couldnt even type.**
+The whole thing listens for keydown which needs a real keyboard, so on mobile nothing happened, you couldnt start the test at all. Added a hidden input that pops up the phone keyboard when you tap the box, and read its input events instead of keydown. So now its tap to type on mobile.
 
 ---
 
